@@ -29,27 +29,27 @@ def data_list(response, url, r_time, list=[]):
 
     urls.append((ts, url, label, r_time, status_code, content_length))
 
+def main():
+    for url in xl_fetch_true['url']:
+        try:
+            response = requests.get(url)
+            r_time = response.elapsed.microseconds
+            data_list(response, url, r_time)
+        except:
+            tb = sys.exc_info()
+            now = datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")
+            agg_errors_data.append({
+                            		 "timestamp": now,
+                            		 "url": url,
+                            	     "error": {
+                            		       "exception_type": str(tb[0]),
+                            		       "exception_value": str(tb[1]),
+                            		       "stack_info": str(tb[2])
+                        		     }
+                                    })
 
-for url in xl_fetch_true['url']:
-    try:
-        response = requests.get(url)
-        r_time = response.elapsed.microseconds
-        data_list(response, url, r_time)
-    except:
-        tb = sys.exc_info()
-        now = datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")
-        agg_errors_data.append({
-                        		 "timestamp": now,
-                        		 "url": url,
-                        	     "error": {
-                        		       "exception_type": str(tb[0]),
-                        		       "exception_value": str(tb[1]),
-                        		       "stack_info": str(tb[2])
-                    		     }
-                                })
-
-        with open('errors.json', 'w') as file:
-            json.dump(agg_errors_data, file, indent=2, ensure_ascii=False)
+            with open('errors.json', 'w') as file:
+                json.dump(agg_errors_data, file, indent=2, ensure_ascii=False)
 
 
 conn = sqlite3.connect("database.db")
